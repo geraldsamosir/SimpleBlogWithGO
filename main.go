@@ -1,8 +1,12 @@
 package main
 
 import (
+	Config "./config"
 	AuthService "./service/auth"
+	ModelUsers "./service/auth/model"
+	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 	"log"
 	"net/http"
 )
@@ -16,6 +20,23 @@ func welcomeApi(res http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
+	//migrate database
+	config := Config.GetConfig()
+
+	dbURI := fmt.Sprintf("%s:%s@/%s?charset=%s&parseTime=True",
+		config.DB.Username,
+		config.DB.Password,
+		config.DB.Name,
+		config.DB.Charset)
+
+	db, err := gorm.Open(config.DB.Dialect, dbURI)
+	if err != nil {
+		log.Fatal("Could not connect database")
+	}
+
+	ModelUsers.DBMigrate(db)
+
+	//builth router
 	r := mux.NewRouter()
 	// Routes consist of a path and a handler function.
 
@@ -25,7 +46,9 @@ func main() {
 	api.HandleFunc("/", welcomeApi)
 
 	//auth Service
-	api.HandleFunc("/users", AuthService.Getallusers).Methods("GET", "POST")
+	api.HandleFunc("/users", AuthService.Getallusers).Methods("GET")
+
+	api.HandleFunc("/users", AuthService.CreateUsers).Methods("POST")
 
 	//static html
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
