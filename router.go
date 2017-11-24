@@ -1,39 +1,11 @@
 package main
 
 import (
-	Config "./config"
 	AuthService "./service/auth"
-	ModelUsers "./service/auth/model"
 	"github.com/gorilla/mux"
-	"github.com/jinzhu/gorm"
 	"log"
 	"net/http"
 )
-
-type App struct {
-	DB *gorm.DB
-}
-
-func welcome(res http.ResponseWriter, req *http.Request) {
-	res.Write([]byte("Welcome to blog Service"))
-}
-
-func welcomeApi(res http.ResponseWriter, req *http.Request) {
-	res.Write([]byte("welcome to blog Api"))
-}
-
-func (a *App) aplication() {
-	Migrate()
-	Router()
-
-}
-
-func Migrate() {
-	//get connecttion db
-	db := Config.Db()
-
-	ModelUsers.DBMigrate(db)
-}
 
 func Router() {
 	//builth router
@@ -58,7 +30,10 @@ func Router() {
 
 }
 
-func main() {
-	app := App{}
-	app.aplication()
+func welcome(res http.ResponseWriter, req *http.Request) {
+	res.Write([]byte("Welcome to blog Service"))
+}
+
+func welcomeApi(res http.ResponseWriter, req *http.Request) {
+	res.Write([]byte("welcome to blog Api"))
 }
