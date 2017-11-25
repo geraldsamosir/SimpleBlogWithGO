@@ -4,6 +4,7 @@ import (
 	Config "./config"
 	AuthService "./service/auth"
 	ModelUsers "./service/auth/model"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"log"
@@ -54,11 +55,13 @@ func Router() {
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 
 	// Bind to a port and pass our router in
+	fmt.Println("server listen in port 8000")
 	log.Fatal(http.ListenAndServe(":8000", r))
 
 }
 
 func main() {
+
 	app := App{}
 	app.aplication()
 }
